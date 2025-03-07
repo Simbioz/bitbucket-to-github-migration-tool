@@ -1,0 +1,27 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 15
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "semi": ["warn", "always"],
+    "block-spacing": ["warn", "always"],
+    "no-console": "off", // Using the console can cause total mayhem when it isn't available!
+    "no-unused-vars": ["warn", { "vars": "all", "args": "none" }],
+    "no-multiple-empty-lines": ["warn", { "max": 1 }], // For cleanliness
+    "no-var": "error", // "var" escapes the scope it's defined in, which can cause duplicate definition issues
+    "no-extra-boolean-cast": "off", // Allows double-negation to test for falsy things
+    "object-curly-spacing": ["warn", "always"],
+    "operator-assignment": ["warn", "always"],
+    "spaced-comment": ["warn", "always"],
+    "capitalized-comments": ["warn", "always", { "ignoreConsecutiveComments": true }],
+    "comma-spacing": "warn",
+    "eqeqeq": "error", // It's recommended to use === to avoid subtle errors
+    "quotes": ["warn", "double", { "allowTemplateLiterals": true }]
+  }
+}

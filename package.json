@@ -1,0 +1,14 @@
+{
+  "name": "bitbucket-to-github-migration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.5.0",
+  "dependencies": {
+    "eslint": "^8.57.1"
+  }
+}
