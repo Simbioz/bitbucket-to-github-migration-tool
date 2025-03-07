@@ -1,5 +1,5 @@
 import { rm, readFile, writeFile } from "fs/promises";
-import { confirm, run } from "./src/util.js";
+import { run } from "./src/util.js";
 import { existsSync } from "fs";
 
 const cloneRepo = async (repo, destination) => {
