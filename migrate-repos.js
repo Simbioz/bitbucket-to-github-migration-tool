@@ -8,25 +8,34 @@ const cloneRepo = async (repo, destination) => {
   run(`git clone --mirror ${url} ${destination}`);
 };
 
-const createGithubRepo = async (name, organization, token) => {
-  const url = `https://api.github.com/orgs/${organization}/repos`; // For organization repos
+const fetchGithub = async (url, token, options = {}) => {
   const headers = {
     Authorization: `Bearer ${token}`,
     Accept: "application/vnd.github+json",
     "Content-Type": "application/json",
   };
-  const body = JSON.stringify({
-    name: name,
-    private: true,
-  });
 
-  const res = await fetch(url, { method: "POST", headers, body });
+  const res = await fetch(url, { headers, ...options });
   if (!res.ok) {
+    if (res.status === 404) return null; // Handle "not found" cases
     throw new Error(`GitHub API error: ${await res.text()}`);
   }
+  return res.json();
+};
 
-  const repo = await res.json();
-  return repo.ssh_url; // SSH push URL
+const getExistingGithubRepoPushURL = async (name, organization, token) => {
+  const url = `https://api.github.com/repos/${organization}/${name}`;
+  const repo = await fetchGithub(url, token);
+  if (repo?.size > 0) throw new Error(`Repository ${name} exists but is not empty`);
+  return repo?.ssh_url;
+};
+
+const createGithubRepo = async (name, organization, token) => {
+  const url = `https://api.github.com/orgs/${organization}/repos`;
+  const body = JSON.stringify({ name, private: true });
+
+  const repo = await fetchGithub(url, token, { method: "POST", body });
+  return repo.ssh_url;
 };
 
 const pushRepo = async (path, pushURL) => {
@@ -62,6 +71,8 @@ const unmigratedRepos = JSON.parse(await readFile(unmigratedReposFile, { encodin
 
 const creds = JSON.parse(await readFile("info.json", { encoding: "utf8" }));
 
+console.info(`===> ${unmigratedRepos.length} repos to migrate`);
+
 while (unmigratedRepos.length > 0) {
   console.info(`===> ${unmigratedRepos.length} repos remaining`);
   const repo = unmigratedRepos.shift();
@@ -69,7 +80,8 @@ while (unmigratedRepos.length > 0) {
   try {
     console.info(`===> Migrating ${repo.name}`);
     console.info(`1. Creating Github repo`);
-    const pushURL = await createGithubRepo(repo.name, creds.github_organization, creds.github_token);
+    let pushURL = await getExistingGithubRepoPushURL(repo.name, creds.github_organization, creds.github_token);
+    if (!pushURL) pushURL = await createGithubRepo(repo.name, creds.github_organization, creds.github_token);
     console.info(`2. Mirroring Bitbucket repo locally`);
     await cloneRepo(repo, destination);
     console.info(`3. Pushing mirror to Github`);
