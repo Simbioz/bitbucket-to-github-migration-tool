@@ -1,6 +1,11 @@
 import { rm, readFile, writeFile } from "fs/promises";
 import { run } from "./src/util.js";
 import { existsSync } from "fs";
+import { confirm } from "./src/util.js";
+
+const args = process.argv.slice(2);
+const confirmBeforePush = args.includes("--confirm-before-push");
+const confirmBeforeNext = args.includes("--confirm-before-next");
 
 const cloneRepo = async (repo, destination) => {
   const url = repo.links.clone.find((link) => link.name === "ssh").href;
@@ -79,13 +84,22 @@ while (unmigratedRepos.length > 0) {
   const destination = `./repos/mirrors/${repo.name}`;
   try {
     console.info(`===> Migrating ${repo.name}`);
+
     console.info(`1. Creating Github repo`);
     let pushURL = await getExistingGithubRepoPushURL(repo.name, creds.github_organization, creds.github_token);
     if (!pushURL) pushURL = await createGithubRepo(repo.name, creds.github_organization, creds.github_token);
+
     console.info(`2. Mirroring Bitbucket repo locally`);
     await cloneRepo(repo, destination);
+
+    if (confirmBeforePush) {
+      const proceed = await confirm("Proceed with push now?");
+      if (!proceed) break;
+    }
+
     console.info(`3. Pushing mirror to Github`);
     await pushRepo(destination, pushURL);
+
     console.info(`4. Deleting local mirror`);
     await rm(destination, { recursive: true, force: true });
 
@@ -109,4 +123,6 @@ while (unmigratedRepos.length > 0) {
     const failed = JSON.parse(await readFile(failedReposFile, { encoding: "utf8" }));
     await writeFile(failedReposFile, JSON.stringify([...failed, repo], undefined, 2));
   }
+
+  if (confirmBeforeNext && !(await confirm("Proceed to next repo? (y/n) "))) break;
 }

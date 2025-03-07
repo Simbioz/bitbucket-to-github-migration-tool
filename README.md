@@ -12,7 +12,8 @@ files during the whole process, ensuring nothing falls between cracks.
 2. Run `node get-repos.js` to fetch a list of all repos on the source provider (creates `repos.json`).
 3. Run `node migrate-repos.js` to batch-migrate repos.
 
-The `migrate-repos.js` script only uses `repos.json` on the first run to create its 3 "working" JSON files in the `repos` subdirectory:
+The `migrate-repos.js` script only uses `repos.json` on the first run to create its 3 "working"
+JSON files in the `repos` subdirectory:
 
 - `unmigrated.json` contains all repos that remain to be migrated (initially taken from `repos.json`)
 - `migrated.json` contains all repos that have successfully been migrated
@@ -24,3 +25,11 @@ and retry them by moving them to the `unmigrated.json` file manually once the is
 have been corrected.
 
 The script will not delete anything from the source provider.
+
+## CLI Flags
+
+- `--confirm-before-push` pauses execution before push, allowing things such as setting up Git LFS
+  for repos that contain files too large to push directly.
+
+- `--confirm-before-next` asks before proceeding with the next repo. Useful if you want to try to
+  figure out why one repo's migration fails or to perform manual verifications after each repo migration.
