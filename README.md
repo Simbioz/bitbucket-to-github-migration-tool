@@ -7,7 +7,7 @@ It could easily be adapted to migrate between two other git cloud providers.
 
 1. Copy `info.template.json` as `info.json` and fill the blanks.
 2. Run `node get-repos.js` to fetch a list of all repos on the source provider (creates `repos.json`).
-3. Run `migrate-repos.js` to batch-migrate repos.
+3. Run `node migrate-repos.js` to batch-migrate repos.
 
 The `migrate-repos.js` script only uses `repos.json` on the first run to create its 3 "runtime" JSON files in the `repos` subdirectory:
 
