@@ -14,7 +14,7 @@ const lfs = options.lfs;
 const cloneRepo = async (repo, destination) => {
   const url = repo.links.clone.find((link) => link.name === "ssh").href;
   await rm(destination, { recursive: true, force: true });
-  run(`git clone --mirror ${url} ${destination}`);
+  run(`git clone --mirror ${url} '${destination}'`);
 };
 
 const fetchGithub = async (url, token, options = {}) => {
@@ -48,11 +48,11 @@ const createGithubRepo = async (name, organization, token) => {
 };
 
 const pushRepo = async (path, pushURL) => {
-  run(`git -C ${path} push --mirror ${pushURL}`);
+  run(`git -C '${path}' push --mirror ${pushURL}`);
 };
 
 const gitLFSImport = async (path, pattern) => {
-  run(`git -C ${path} lfs migrate import --include="${pattern}" --everything`);
+  run(`git -C '${path}' lfs migrate import --include="${pattern}" --everything`);
 };
 
 const reposFile = "repos/repos.json";
