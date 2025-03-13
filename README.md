@@ -28,8 +28,14 @@ The script will not delete anything from the source provider.
 
 ## CLI Flags
 
+- `--lfs='*.mp4,*.mov'` to specify patterns to import into Git LFS (will rewrite history) before pushing
+  the updated repo to the new remote.
+
 - `--confirm-before-push` pauses execution before push, allowing things such as setting up Git LFS
   for repos that contain files too large to push directly.
 
 - `--confirm-before-next` asks before proceeding with the next repo. Useful if you want to try to
   figure out why one repo's migration fails or to perform manual verifications after each repo migration.
+
+- `--ignore-failed` does not move a repo from `unmigrated.json` to `failed.json` on failure. Useful with
+  to avoid having to manipulate files when you have to retry migrating the same repo multiple times.
