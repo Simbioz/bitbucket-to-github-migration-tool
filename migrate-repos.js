@@ -8,7 +8,7 @@ const options = yargs(process.argv.slice(2)).argv;
 
 const confirmBeforePush = options["confirm-before-push"];
 const confirmBeforeNext = options["confirm-before-next"];
-const ignoreFailure = options["ignore-failure"];
+const ignoreFailed = options["ignore-failed"];
 const lfs = options.lfs;
 
 const cloneRepo = async (repo, destination) => {
@@ -128,7 +128,7 @@ while (unmigratedRepos.length > 0) {
     // Remove the local mirror (clean start)
     await rm(destination, { recursive: true, force: true });
 
-    if (!ignoreFailure) {
+    if (!ignoreFailed) {
       // Write the unmigrated.json file with the failed repo removed
       // (so we can continue processing it until it's empty and handle failures later)
       await writeFile(unmigratedReposFile, JSON.stringify(unmigratedRepos, undefined, 2));
